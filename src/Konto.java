@@ -3,6 +3,7 @@ import org.json.JSONObject;
 import javax.naming.Name;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -67,11 +68,9 @@ public abstract class Konto {
                 return konto;
             default:
                 return konto = null
-
                 ;
         }
     }
-
     public void ErstelleKonto() {
         //Step 1. Erstellen ein neues Objekt
         //Step 2. Weisen ihm alle daten zu
@@ -98,18 +97,6 @@ public abstract class Konto {
         JsonJackson jsonJackson = new JsonJackson();
         //Neue Json Methode
         jsonJackson.ObjectToJson(konto,userID);
-
-        //Jedes neue konto starten mit einem betrag von 0€
-        //Erstellen neues bank object und teilen die werte zu
-//        JSONObject jsonkonto = new JSONObject();
-//        jsonkonto.put("Name", konto.getVollerName());
-//        jsonkonto.put("Kontonummer", konto.getKontoNummer());
-//        jsonkonto.put("Kontostand", konto.getKontoStand());
-//        jsonkonto.put("Kontoart",konto.getKontoArt());
-//
-//        //Schreiben die JSON Datei um ein neue konto zu eröffnen
-//        JsonUtils utils = new JsonUtils();
-//        utils.writeJsonBank(jsonkonto, userID);
     }
 
     public void KontoBetreten() {
@@ -119,26 +106,24 @@ public abstract class Konto {
 
         String kontonummer = userInput.nextLine();
 
-        JsonUtils jsonUtils = new JsonUtils();
-        JSONObject jsonkonto = jsonUtils.readJsonBank(kontonummer);
+
+        JsonJackson jackson = new JsonJackson();
+        //todo Prüfung einbauen ob kontonummer existiert //Brauchen wir ja sonst nicht oder?
+        //Laden in der methode die Json in eine map rein und reichen sie weiter
+        Map<String,Object> kontodaten = jackson.JsonToObject(kontonummer);
 
         //todo Davor kontodaten anzeigen bevor der aktion
-
         System.out.println("Bitte Wählen sie Ihre Aktion");
         System.out.println("[E]-Einzahlen");
         System.out.println("[A]-Abheben");
 
         String userinput = userInput.nextLine();
-        //System.out.println(jsonkonto.getString("Name"));
         switch (userinput) {
             case "E":
-                jsonUtils.modifyJsonBank("E", jsonkonto);
-
+                jackson.EditJsonObject("E",kontodaten);
                 break;
             case "A":
-
-
-                jsonUtils.modifyJsonBank("A", jsonkonto);
+                jackson.EditJsonObject("A",kontodaten);
                 break;
         }
     }
