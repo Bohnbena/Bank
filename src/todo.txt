@@ -1,0 +1,4 @@
+TODO
+
+1. Abstractionen machen für die konto klasse
+2. Transaktionen in die Jsonutils hinzufügen
