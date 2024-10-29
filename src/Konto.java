@@ -1,6 +1,7 @@
 import org.json.JSONObject;
 
 import javax.naming.Name;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
@@ -54,36 +55,37 @@ public abstract class Konto {
         this.kontoArt = kontoArt;
     }
 
-    public Konto wähleKontoArt(String input)
-    {
+    public Konto wähleKontoArt() {
+        Scanner userInput = new Scanner(System.in);
         Konto konto;
-        switch (input){
-            case "G": //Konto Eröffnen
-                konto = new Girokonto();
-                konto.setKontoArt("Griokonto");
-                return konto;
-            case "P": //Konto Betreten
-                konto = new PremiumGrioKonto();
-                konto.setKontoArt("Premium Girokonto");
-                return konto;
-            default:
-                return konto = null
-                ;
+        kontoart:
+        while(true)
+        {
+            System.out.println("Bitte Wählen sie Ihre Kontoart");
+            System.out.println("[G]-Girokonto[Gebühren-0,5%]");
+            System.out.println("[P]-Girokontopremium[Gebühren-2%]");
+            switch (userInput.nextLine()) {
+                case "G": //Konto Eröffnen
+                    konto = new Girokonto();
+                    konto.setKontoArt("Griokonto");
+                    return konto;
+                case "P": //Konto Betreten
+                    konto = new PremiumGrioKonto();
+                    konto.setKontoArt("Premium Girokonto");
+                    return konto;
+            }
         }
+
     }
+
     public void ErstelleKonto() {
         //Step 1. Erstellen ein neues Objekt
         //Step 2. Weisen ihm alle daten zu
         //Step 3. Speichern denn nutzer Ab
         Scanner userInput = new Scanner(System.in);
 
-        // Hier bestimmen wir die konto art
-        System.out.println("Bitte Wählen sie Ihre Kontoart");
-        System.out.println("[G]-Girokonto[Gebühren-0,5%]");
-        System.out.println("[P]-Girokontopremium[Gebühren-2%]");
-
         //Default müssen wir ausehalb des scopes schon ein konto object erstellen
-        Konto konto = wähleKontoArt(userInput.nextLine());;
+        Konto konto = wähleKontoArt();
 
         System.out.println("Bitte Namen Eingeben");
         konto.setVollerName(userInput.nextLine());
@@ -96,35 +98,54 @@ public abstract class Konto {
 
         JsonJackson jsonJackson = new JsonJackson();
         //Neue Json Methode
-        jsonJackson.ObjectToJson(konto,userID);
+        jsonJackson.ObjectToJson(konto, userID);
+
+        //Wenn ein neuer kunde angelegt wird, sollten wir auch ein transaktionen ordner für ihn erstellen
+        File transactionsdir = new File("Transactions");
+        if (!transactionsdir.exists()) {
+            transactionsdir.mkdirs();
+        }
+        //Dannach erstellen wir denn transaktionens ordner auf der Userebene
+        File usertransactionsdir = new File("Transactions/" + userID);
+        if (!usertransactionsdir.exists()) {
+            usertransactionsdir.mkdirs();
+        }
+        konto.KontoBetreten(userID);
     }
 
-    public void KontoBetreten() {
-
+    public void KontoBetreten(String kontoNummer) {
         Scanner userInput = new Scanner(System.in);
-        System.out.println("Bitte Kontonummer eingeben");
-
-        String kontonummer = userInput.nextLine();
-
+        if (kontoNummer.isEmpty())
+        {
+            System.out.println("Bitte Kontonummer eingeben");
+            kontoNummer = userInput.nextLine();
+        }
 
         JsonJackson jackson = new JsonJackson();
         //todo Prüfung einbauen ob kontonummer existiert //Brauchen wir ja sonst nicht oder?
         //Laden in der methode die Json in eine map rein und reichen sie weiter
-        Map<String,Object> kontodaten = jackson.JsonToObject(kontonummer);
+        Map<String, Object> kontodaten = jackson.JsonToObject(kontoNummer);
 
         //todo Davor kontodaten anzeigen bevor der aktion
-        System.out.println("Bitte Wählen sie Ihre Aktion");
-        System.out.println("[E]-Einzahlen");
-        System.out.println("[A]-Abheben");
 
-        String userinput = userInput.nextLine();
-        switch (userinput) {
-            case "E":
-                jackson.EditJsonObject("E",kontodaten);
-                break;
-            case "A":
-                jackson.EditJsonObject("A",kontodaten);
-                break;
+        while (true) {
+            System.out.println("Bitte Wählen sie Ihre Aktion");
+            System.out.println("[E]-Einzahlen");
+            System.out.println("[A]-Abheben");
+            System.out.println("[X]-Exit");
+
+            String userinput = userInput.nextLine();
+            switch (userinput) {
+                case "E":
+                    jackson.EditJsonObject("E", kontodaten);
+                    break;
+                case "A":
+                    jackson.EditJsonObject("A", kontodaten);
+                    break;
+                case "X":
+                    System.exit(0);
+                    break;
+            }
         }
     }
 }
@@ -132,12 +153,9 @@ public abstract class Konto {
 class Girokonto extends Konto {
 
 
-
-
 }
 
 class PremiumGrioKonto extends Konto {
-
 
 
 }

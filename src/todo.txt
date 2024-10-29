@@ -1,4 +1,6 @@
 TODO
 
-1. Abstractionen machen für die konto klasse
-2. Transaktionen in die Jsonutils hinzufügen
+1. Überweisungen
+2. Transaktionen / Stukturiert , 1 Transaktionen Ordner pro Kunde
+3. Sicherheit / Verschlüsselung
+

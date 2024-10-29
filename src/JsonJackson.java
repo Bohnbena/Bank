@@ -29,15 +29,15 @@ public class JsonJackson {
     }
 
     public void EditJsonObject(String methode, Map<String, Object> kontodaten) {
-
         Scanner scanner  = new Scanner(System.in);
         System.out.println("Betrag:");
         String userinput = scanner.nextLine();
+
         int betrag       = Integer.parseInt(userinput);
+        int kontostand   = (Integer) kontodaten.get("kontoStand");
 
         if (methode.equals("E")) {
             //Wenn ein kontostand existiert müssen wir denn jetzigen betrag und denn neuen addieren
-            int kontostand = (Integer) kontodaten.get("kontoStand");
             if (kontostand > 0) {
                 kontostand = kontostand + betrag;
             } else {
@@ -45,6 +45,14 @@ public class JsonJackson {
             }
             kontodaten.put("kontoStand", kontostand);
         } else if (methode.equals("A")) {
+            if (kontostand < betrag)
+            {
+                System.out.println("Nicht genug Geld auf dem konto");
+            } else
+            {
+                kontostand = kontostand - betrag;
+                kontodaten.put("kontoStand", kontostand);
+            }
         }
         File file = new File((String) kontodaten.get("kontoNummer") + ".json");
         ObjectMapper objectMapper = new ObjectMapper();
