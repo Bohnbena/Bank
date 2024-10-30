@@ -4,6 +4,9 @@ import javax.naming.Name;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
@@ -106,7 +109,10 @@ public abstract class Konto {
             transactionsdir.mkdirs();
         }
         //Dannach erstellen wir denn transaktionens ordner auf der Userebene
-        File usertransactionsdir = new File("Transactions/" + userID);
+        String path = userID;
+        String basepath = "Transactions";
+
+        File usertransactionsdir = new File(basepath,path);
         if (!usertransactionsdir.exists()) {
             usertransactionsdir.mkdirs();
         }
